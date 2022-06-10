@@ -86,25 +86,35 @@ Vue.createApp({
       this.inputStatus.id = "";
     },
     sendNewPost() {
-      this.loaderTrigger();
+      this.loaderOn();
       if (this.inputStatus.title && this.inputStatus.body && this.inputStatus.id) {
-        this.editPostPUT(this.inputStatus.id, this.inputStatus.title, this.inputStatus.body);
-        this.getPosts().then(res => {
-          this.posts = res.map(i => i);
-          this.$forceUpdate();
-        })
+        this.editPostPUT(this.inputStatus.id, this.inputStatus.title, this.inputStatus.body)
+          .then(res => {
+            this.getPosts().then(res => {
+              console.log(res);
+              this.posts = res.map(i => i);
+              this.$forceUpdate();
+              this.loaderOff();
+              this.inputStatus.id = "";
+              this.inputStatus.title = "";
+              this.inputStatus.body = "";
+            })
+          });
+
+      } else {
+        this.loaderOff();
       }
-      this.loaderTrigger();
     },
     login() {
-      this.loaderTrigger();
+      this.loaderOn();
       this.getAuth().then(res => {
         res.forEach(i => {
           if (i.email === `${this.email.value}`, i.password === `${this.password.value}`) {
+            this.loaderOff();
             this.userFind = true;
             this.errorText = false;
-            this.loaderTrigger();
             if (this.userFind) {
+              this.loaderOff();
               this.authorizedPage = true;
               this.loginPage = false;
               this.publicPage = false;
@@ -112,7 +122,7 @@ Vue.createApp({
           } else {
             this.errorText = true;
             this.userFind = false;
-            this.loaderTrigger();
+            this.loaderOff();
           }
         })
       })
@@ -128,18 +138,22 @@ Vue.createApp({
         this.publicPage = true;
       }
     },
-    loaderTrigger() {
-      this.loader = !this.loader;
+    loaderOff() {
+      this.loader = false;
+    }
+    ,
+    loaderOn() {
+      this.loader = true;
     }
   },
   created() {
-    this.loaderTrigger();
+    this.loaderOn();
     this.getPosts().then(res => {
       this.posts = res.map(i => i);
     })
   },
   mounted() {
-    this.loaderTrigger();
+    this.loaderOff();
   },
 })
   .mount('#app');
