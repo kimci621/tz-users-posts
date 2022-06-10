@@ -91,9 +91,8 @@ Vue.createApp({
         this.editPostPUT(this.inputStatus.id, this.inputStatus.title, this.inputStatus.body);
         this.getPosts().then(res => {
           this.posts = res.map(i => i);
+          this.$forceUpdate();
         })
-          .then((res) => {
-          })
       }
       this.loaderTrigger();
     },
